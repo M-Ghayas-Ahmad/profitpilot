@@ -18,3 +18,6 @@ export function formatDate(value: string | Date) {
     year: "numeric",
   });
 }
+
+/** `spentBy` value for buys paid from the pot by all partners in equal shares. */
+export const SHARED_SPENDER = "Both";

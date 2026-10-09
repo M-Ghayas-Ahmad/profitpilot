@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
-import { Business } from "@/models/Business";
+import { getOrCreateBusiness } from "@/lib/business";
 import { Contribution } from "@/models/Contribution";
 import { Expense } from "@/models/Expense";
 import { Partner } from "@/models/Partner";
+import { SHARED_SPENDER } from "@/lib/format";
 
 /**
  * Golden Egg Farm example:
@@ -16,20 +17,12 @@ export async function seedEggShedExample(
   options: { force?: boolean } = {},
 ) {
   const createdBy = new mongoose.Types.ObjectId(userId);
-  let business = await Business.findOne({ createdBy });
-  if (!business) {
-    business = await Business.create({
-      name: "Golden Egg Farm",
-      currency: "Rs",
-      targetCapital: 50_000,
-      createdBy,
-    });
-  }
+  const business = await getOrCreateBusiness(userId);
 
   const [partnerCount, contribCount, expenseCount] = await Promise.all([
     Partner.countDocuments({ businessId: business._id }),
     Contribution.countDocuments({ businessId: business._id }),
-    Expense.countDocuments({ createdBy }),
+    Expense.countDocuments({ businessId: business._id }),
   ]);
 
   const isEmpty = partnerCount === 0 && contribCount === 0 && expenseCount === 0;
@@ -41,11 +34,11 @@ export async function seedEggShedExample(
     await Promise.all([
       Partner.deleteMany({ businessId: business._id }),
       Contribution.deleteMany({ businessId: business._id }),
-      Expense.deleteMany({ createdBy }),
+      Expense.deleteMany({ businessId: business._id }),
     ]);
   }
 
-  business.name = "Golden Egg Farm";
+  // Keep the shared business's own name; only reset the money setup.
   business.currency = "Rs";
   business.targetCapital = 50_000;
   await business.save();
@@ -92,46 +85,52 @@ export async function seedEggShedExample(
 
   await Expense.create([
     {
+      businessId: business._id,
       title: "Jali",
       amount: 2_000,
-      spentBy: "Partner A",
+      spentBy: SHARED_SPENDER,
       note: "Wire mesh for the shed",
       date: today,
       createdBy,
     },
     {
+      businessId: business._id,
       title: "Oil paint",
       amount: 350,
-      spentBy: "Partner B",
+      spentBy: SHARED_SPENDER,
       note: "Shed coating",
       date: today,
       createdBy,
     },
     {
+      businessId: business._id,
       title: "Gola",
       amount: 300,
-      spentBy: "Partner A",
+      spentBy: SHARED_SPENDER,
       date: today,
       createdBy,
     },
     {
+      businessId: business._id,
       title: "Plastic",
       amount: 720,
-      spentBy: "Partner B",
+      spentBy: SHARED_SPENDER,
       date: today,
       createdBy,
     },
     {
+      businessId: business._id,
       title: "Gloves",
       amount: 50,
-      spentBy: "Partner A",
+      spentBy: SHARED_SPENDER,
       date: today,
       createdBy,
     },
     {
+      businessId: business._id,
       title: "Spray bottle",
       amount: 1_000,
-      spentBy: "Partner B",
+      spentBy: SHARED_SPENDER,
       date: today,
       createdBy,
     },

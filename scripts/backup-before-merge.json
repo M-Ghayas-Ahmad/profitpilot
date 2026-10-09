@@ -1,0 +1,123 @@
+{
+  "business": null,
+  "partners": [
+    {
+      "_id": "6ac9618dd19ff5fe30a4bd6e",
+      "businessId": "6ac9618dd19ff5fe30a4bd6c",
+      "name": "Junaid",
+      "committedAmount": 25000,
+      "createdBy": "6ac9618dd19ff5fe30a4bd6a",
+      "createdAt": "2026-10-09T21:50:05.348Z",
+      "updatedAt": "2026-10-09T21:51:45.571Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ac9618dd19ff5fe30a4bd6d",
+      "businessId": "6ac9618dd19ff5fe30a4bd6c",
+      "name": "Saeed",
+      "committedAmount": 25000,
+      "createdBy": "6ac9618dd19ff5fe30a4bd6a",
+      "createdAt": "2026-10-09T21:50:05.348Z",
+      "updatedAt": "2026-10-09T21:51:35.804Z",
+      "__v": 0
+    }
+  ],
+  "contributions": [
+    {
+      "_id": "6ac9618dd19ff5fe30a4bd70",
+      "businessId": "6ac9618dd19ff5fe30a4bd6c",
+      "partnerId": "6ac9618dd19ff5fe30a4bd6e",
+      "partnerName": "Junaid",
+      "amount": 5000,
+      "note": "First materials — share of 10k need",
+      "date": "2026-10-08T21:50:05.347Z",
+      "createdBy": "6ac9618dd19ff5fe30a4bd6a",
+      "createdAt": "2026-10-09T21:50:05.360Z",
+      "updatedAt": "2026-10-09T21:51:45.580Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ac9618dd19ff5fe30a4bd6f",
+      "businessId": "6ac9618dd19ff5fe30a4bd6c",
+      "partnerId": "6ac9618dd19ff5fe30a4bd6d",
+      "partnerName": "Saeed",
+      "amount": 5000,
+      "note": "First materials — share of 10k need",
+      "date": "2026-10-08T21:50:05.347Z",
+      "createdBy": "6ac9618dd19ff5fe30a4bd6a",
+      "createdAt": "2026-10-09T21:50:05.360Z",
+      "updatedAt": "2026-10-09T21:51:35.811Z",
+      "__v": 0
+    }
+  ],
+  "expenses": [
+    {
+      "_id": "6ac9618dd19ff5fe30a4bd72",
+      "title": "Oil paint",
+      "amount": 350,
+      "spentBy": "Both",
+      "note": "Shed coating",
+      "date": "2026-10-09T21:50:05.347Z",
+      "createdBy": "6ac9618dd19ff5fe30a4bd6a",
+      "createdAt": "2026-10-09T21:50:05.374Z",
+      "updatedAt": "2026-10-09T21:51:45.601Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ac9618dd19ff5fe30a4bd71",
+      "title": "Jali",
+      "amount": 2000,
+      "spentBy": "Both",
+      "note": "Wire mesh for the shed",
+      "date": "2026-10-09T21:50:05.347Z",
+      "createdBy": "6ac9618dd19ff5fe30a4bd6a",
+      "createdAt": "2026-10-09T21:50:05.374Z",
+      "updatedAt": "2026-10-09T21:51:35.845Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ac9618dd19ff5fe30a4bd73",
+      "title": "Gola",
+      "amount": 300,
+      "spentBy": "Both",
+      "date": "2026-10-09T21:50:05.347Z",
+      "createdBy": "6ac9618dd19ff5fe30a4bd6a",
+      "createdAt": "2026-10-09T21:50:05.374Z",
+      "updatedAt": "2026-10-09T21:51:35.845Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ac9618dd19ff5fe30a4bd76",
+      "title": "Spray bottle",
+      "amount": 1000,
+      "spentBy": "Both",
+      "date": "2026-10-09T21:50:05.347Z",
+      "createdBy": "6ac9618dd19ff5fe30a4bd6a",
+      "createdAt": "2026-10-09T21:50:05.374Z",
+      "updatedAt": "2026-10-09T21:51:45.601Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ac9618dd19ff5fe30a4bd74",
+      "title": "Plastic",
+      "amount": 720,
+      "spentBy": "Both",
+      "date": "2026-10-09T21:50:05.347Z",
+      "createdBy": "6ac9618dd19ff5fe30a4bd6a",
+      "createdAt": "2026-10-09T21:50:05.374Z",
+      "updatedAt": "2026-10-09T21:51:45.601Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ac9618dd19ff5fe30a4bd75",
+      "title": "Gloves",
+      "amount": 50,
+      "spentBy": "Both",
+      "date": "2026-10-09T21:50:05.347Z",
+      "createdBy": "6ac9618dd19ff5fe30a4bd6a",
+      "createdAt": "2026-10-09T21:50:05.374Z",
+      "updatedAt": "2026-10-09T21:51:35.845Z",
+      "__v": 0
+    }
+  ]
+}

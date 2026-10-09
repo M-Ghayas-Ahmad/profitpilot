@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { getSession } from "@/lib/auth";
 import { logActivity } from "@/lib/activity";
 import { connectDB } from "@/lib/db";
+import { getOrCreateBusiness } from "@/lib/business";
 import { Expense } from "@/models/Expense";
 
 const updateSchema = z.object({
@@ -34,8 +35,9 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
     const update: Record<string, unknown> = { ...body };
     if (body.date) update.date = new Date(body.date);
 
+    const business = await getOrCreateBusiness(session.id);
     const expense = await Expense.findOneAndUpdate(
-      { _id: id, createdBy: session.id },
+      { _id: id, businessId: business._id },
       { $set: update },
       { new: true },
     );
@@ -103,9 +105,10 @@ export async function DELETE(_req: NextRequest, ctx: Ctx) {
   }
 
   await connectDB();
+  const business = await getOrCreateBusiness(session.id);
   const deleted = await Expense.findOneAndDelete({
     _id: id,
-    createdBy: session.id,
+    businessId: business._id,
   });
 
   if (!deleted) {
