@@ -1,6 +1,8 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { ConfirmModal } from "@/components/ConfirmModal";
 import { formatDate, formatMoney } from "@/lib/format";
 
 type Expense = {
@@ -28,6 +30,27 @@ export function ExpensesClient() {
   const [editing, setEditing] = useState<Expense | null>(null);
   const [editBusy, setEditBusy] = useState(false);
   const [editError, setEditError] = useState("");
+  const [deleting, setDeleting] = useState<Expense | null>(null);
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!editing) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setEditing(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [editing]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -55,10 +78,17 @@ export function ExpensesClient() {
     load();
   }
 
-  async function remove(id: string) {
-    if (!confirm("Delete this expense?")) return;
-    const res = await fetch(`/api/expenses/${id}`, { method: "DELETE" });
-    if (res.ok) load();
+  async function confirmDelete() {
+    if (!deleting) return;
+    setDeleteBusy(true);
+    const res = await fetch(`/api/expenses/${deleting.id}`, {
+      method: "DELETE",
+    });
+    setDeleteBusy(false);
+    if (res.ok) {
+      setDeleting(null);
+      load();
+    }
   }
 
   async function saveEdit(e: FormEvent<HTMLFormElement>) {
@@ -91,6 +121,105 @@ export function ExpensesClient() {
     setEditing(null);
     load();
   }
+
+  const editModal =
+    editing && mounted
+      ? createPortal(
+          <div
+            className="modal-backdrop"
+            onClick={() => setEditing(null)}
+            role="presentation"
+          >
+            <div
+              className="modal-card"
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="edit-expense-title"
+            >
+              <div className="modal-head">
+                <div>
+                  <h2 id="edit-expense-title">Edit expense</h2>
+                  <p>Update the details, then save.</p>
+                </div>
+                <button
+                  type="button"
+                  className="btn-icon"
+                  aria-label="Close"
+                  onClick={() => setEditing(null)}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={saveEdit}>
+                <div className="form-grid">
+                  <label>
+                    What was bought?
+                    <input name="title" required defaultValue={editing.title} />
+                  </label>
+                  <label>
+                    Who spent?
+                    <input
+                      name="spentBy"
+                      required
+                      defaultValue={editing.spentBy}
+                    />
+                  </label>
+                  <label>
+                    Amount (Rs)
+                    <input
+                      name="amount"
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      required
+                      defaultValue={editing.amount}
+                    />
+                  </label>
+                  <label>
+                    Date
+                    <input
+                      name="date"
+                      type="date"
+                      required
+                      defaultValue={toDateInput(editing.date)}
+                    />
+                  </label>
+                  <label className="full">
+                    Note (optional)
+                    <textarea
+                      name="note"
+                      rows={3}
+                      defaultValue={editing.note}
+                    />
+                  </label>
+                </div>
+
+                {editError ? <p className="form-error">{editError}</p> : null}
+
+                <div className="modal-actions">
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => setEditing(null)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    disabled={editBusy}
+                  >
+                    {editBusy ? "Saving…" : "Update expense"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>,
+          document.body,
+        )
+      : null;
 
   return (
     <div className="stack-lg">
@@ -138,85 +267,49 @@ export function ExpensesClient() {
             </div>
             <div className="row-actions">
               <span className="amount">{formatMoney(ex.amount)}</span>
-              <button type="button" className="link-edit" onClick={() => setEditing(ex)}>
-                Edit
-              </button>
-              <button type="button" onClick={() => remove(ex.id)}>
-                Delete
-              </button>
+              <div className="action-btns">
+                <button
+                  type="button"
+                  className="btn-action edit"
+                  onClick={() => {
+                    setEditError("");
+                    setEditing(ex);
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  className="btn-action danger"
+                  onClick={() => setDeleting(ex)}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </li>
         ))}
       </ul>
 
-      {editing ? (
-        <div className="modal-backdrop" onClick={() => setEditing(null)}>
-          <div
-            className="modal-card"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Edit expense"
-          >
-            <div className="page-head" style={{ marginBottom: "1rem" }}>
-              <div>
-                <h1 style={{ fontSize: "1.45rem" }}>Edit expense</h1>
-                <p>Update the details, then save.</p>
-              </div>
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={() => setEditing(null)}
-              >
-                Close
-              </button>
-            </div>
+      {editModal}
 
-            <form className="form-card" onSubmit={saveEdit} style={{ boxShadow: "none", border: 0, padding: 0 }}>
-              <div className="form-grid">
-                <label>
-                  What was bought?
-                  <input name="title" required defaultValue={editing.title} />
-                </label>
-                <label>
-                  Who spent?
-                  <input name="spentBy" required defaultValue={editing.spentBy} />
-                </label>
-                <label>
-                  Amount (Rs)
-                  <input
-                    name="amount"
-                    type="number"
-                    min="0.01"
-                    step="0.01"
-                    required
-                    defaultValue={editing.amount}
-                  />
-                </label>
-                <label>
-                  Date
-                  <input
-                    name="date"
-                    type="date"
-                    required
-                    defaultValue={toDateInput(editing.date)}
-                  />
-                </label>
-                <label className="full">
-                  Note (optional)
-                  <textarea name="note" rows={3} defaultValue={editing.note} />
-                </label>
-              </div>
-
-              {editError ? <p className="form-error">{editError}</p> : null}
-
-              <button type="submit" className="btn-primary" disabled={editBusy}>
-                {editBusy ? "Saving…" : "Update expense"}
-              </button>
-            </form>
-          </div>
-        </div>
-      ) : null}
+      <ConfirmModal
+        open={Boolean(deleting)}
+        title="Delete expense?"
+        message={
+          deleting
+            ? `Remove “${deleting.title}” (${formatMoney(deleting.amount)}) by ${deleting.spentBy}? This cannot be undone.`
+            : ""
+        }
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        danger
+        busy={deleteBusy}
+        onConfirm={confirmDelete}
+        onCancel={() => {
+          if (!deleteBusy) setDeleting(null);
+        }}
+      />
     </div>
   );
 }

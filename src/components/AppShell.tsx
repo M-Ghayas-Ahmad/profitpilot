@@ -62,8 +62,23 @@ export function AppShell({
     setOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
   async function logout() {
     setBusy(true);
+    setOpen(false);
     await fetch("/api/auth/logout", { method: "POST" });
     router.replace("/login");
     router.refresh();
@@ -75,19 +90,34 @@ export function AppShell({
 
   return (
     <div className="app-frame">
-      <div
+      <button
+        type="button"
         className={`sidebar-backdrop${open ? " show" : ""}`}
+        aria-label="Close menu"
+        tabIndex={open ? 0 : -1}
         onClick={() => setOpen(false)}
-        aria-hidden={!open}
       />
 
-      <aside className={`sidebar${open ? " open" : ""}`}>
-        <div className="brand">
-          <span className="brand-mark">PP</span>
-          <div>
-            <strong>ProfitPilot</strong>
-            <p className="brand-sub">Expense command</p>
+      <aside
+        className={`sidebar${open ? " open" : ""}`}
+        aria-hidden={!open ? undefined : undefined}
+      >
+        <div className="sidebar-top">
+          <div className="brand">
+            <span className="brand-mark">PP</span>
+            <div>
+              <strong>ProfitPilot</strong>
+              <p className="brand-sub">Expense command</p>
+            </div>
           </div>
+          <button
+            type="button"
+            className="sidebar-close"
+            aria-label="Close menu"
+            onClick={() => setOpen(false)}
+          >
+            Close
+          </button>
         </div>
 
         <nav className="sidebar-nav" aria-label="Primary">
@@ -101,6 +131,7 @@ export function AppShell({
                 key={item.href}
                 href={item.href}
                 className={active ? "active" : ""}
+                onClick={() => setOpen(false)}
               >
                 {item.icon}
                 {item.label}
@@ -128,10 +159,11 @@ export function AppShell({
           <button
             type="button"
             className="nav-toggle"
-            aria-label="Open menu"
-            onClick={() => setOpen(true)}
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
           >
-            Menu
+            {open ? "Close" : "Menu"}
           </button>
         </div>
         <main className="app-main">{children}</main>

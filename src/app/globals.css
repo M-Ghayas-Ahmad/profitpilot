@@ -306,8 +306,33 @@ textarea {
     linear-gradient(180deg, var(--sidebar-2), var(--sidebar));
   color: var(--sidebar-text);
   border-right: 1px solid rgba(255, 255, 255, 0.04);
-  animation: slideInLeft 0.55s var(--ease) both;
-  z-index: 30;
+  z-index: 50;
+}
+
+@media (min-width: 981px) {
+  .sidebar {
+    animation: slideInLeft 0.55s var(--ease) both;
+  }
+}
+
+.sidebar-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.sidebar-close {
+  display: none;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  color: #e8efe9;
+  border-radius: 10px;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 650;
+  cursor: pointer;
 }
 
 .sidebar-nav {
@@ -406,6 +431,11 @@ textarea {
 
 .sidebar-backdrop {
   display: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
 }
 
 .app-main {
@@ -984,7 +1014,7 @@ textarea {
 .row-actions {
   display: grid;
   justify-items: end;
-  gap: 0.45rem;
+  gap: 0.55rem;
   align-content: start;
 }
 
@@ -995,41 +1025,309 @@ textarea {
   white-space: nowrap;
 }
 
-.row-actions button {
-  border: 0;
-  background: transparent;
-  color: var(--bad-text);
-  cursor: pointer;
-  font-size: 0.86rem;
-  font-weight: 550;
+.action-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: flex-end;
 }
 
-.row-actions .link-edit {
+.btn-action {
+  border: 1px solid var(--line-strong);
+  background: #fff;
+  border-radius: 10px;
+  padding: 0.42rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.btn-action.edit {
   color: var(--accent);
+  border-color: rgba(31, 138, 110, 0.28);
+  background: var(--accent-soft);
+}
+
+.btn-action.edit:hover {
+  background: rgba(31, 138, 110, 0.18);
+  transform: translateY(-1px);
+}
+
+.btn-action.danger {
+  color: var(--bad-text);
+  border-color: rgba(155, 28, 28, 0.22);
+  background: var(--bad-bg);
+}
+
+.btn-action.danger:hover {
+  background: #f3cccc;
+  transform: translateY(-1px);
 }
 
 .modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
   display: grid;
   place-items: center;
   padding: 1rem;
-  background: rgba(12, 18, 16, 0.5);
-  backdrop-filter: blur(4px);
-  animation: fadeIn 0.25s var(--ease) both;
+  margin: 0;
+  background: rgba(8, 14, 12, 0.62);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: fadeIn 0.22s var(--ease) both;
 }
 
 .modal-card {
-  width: min(560px, 100%);
-  max-height: min(90vh, 720px);
+  width: min(540px, 100%);
+  max-height: min(88vh, 700px);
   overflow: auto;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 18px;
-  padding: 1.25rem 1.3rem 1.4rem;
-  box-shadow: 0 24px 60px -28px rgba(12, 18, 16, 0.55);
-  animation: fadeUp 0.35s var(--ease) both;
+  padding: 1.25rem 1.3rem 1.35rem;
+  box-shadow: 0 28px 70px -24px rgba(0, 0, 0, 0.55);
+  animation: fadeUp 0.32s var(--ease) both;
+}
+
+.modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.1rem;
+}
+
+.modal-head h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+.modal-head p {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-2);
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1;
+  color: var(--ink-soft);
+}
+
+.btn-icon:hover {
+  background: #e8eee9;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.modal-actions .btn-primary,
+.modal-actions .btn-secondary {
+  appearance: none;
+  -webkit-appearance: none;
+  min-height: 44px;
+  padding: 0.7rem 1.15rem;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-actions .btn-secondary {
+  background: #f1f5f2;
+  color: var(--ink-soft);
+  border: 1px solid var(--line-strong);
+  box-shadow: none;
+}
+
+.modal-actions .btn-primary {
+  background: linear-gradient(145deg, #176b55, #2aa882);
+  color: #fff;
+  border: 0;
+  box-shadow: 0 12px 24px -14px rgba(31, 138, 110, 0.95);
+}
+
+/* ——— Confirm modal (self-contained styles) ——— */
+.confirm-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 10000 !important;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  margin: 0;
+  background: rgba(8, 14, 12, 0.62);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: fadeIn 0.2s var(--ease) both;
+}
+
+.confirm-sheet {
+  width: min(400px, 100%);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 1.5rem 1.4rem 1.35rem;
+  box-shadow: 0 28px 70px -22px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  animation: fadeUp 0.3s var(--ease) both;
+}
+
+.confirm-icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 0.9rem;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #176b55;
+  background: var(--accent-soft);
+}
+
+.confirm-icon.is-danger {
+  color: #9b1c1c;
+  background: #fde8e8;
+}
+
+.confirm-sheet h2 {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 1.25rem;
+  font-weight: 750;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+.confirm-sheet p {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
+
+.confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  margin-top: 1.35rem;
+}
+
+.confirm-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease), background 0.2s, opacity 0.2s,
+    box-shadow 0.2s;
+}
+
+.confirm-btn:disabled {
+  opacity: 0.55;
+  cursor: wait;
+  transform: none !important;
+}
+
+.confirm-btn-cancel {
+  background: #f1f5f2;
+  color: var(--ink-soft);
+  border-color: var(--line-strong);
+}
+
+.confirm-btn-cancel:hover:not(:disabled) {
+  background: #e6ece8;
+  transform: translateY(-1px);
+}
+
+.confirm-btn-ok {
+  background: linear-gradient(145deg, #176b55, #2aa882);
+  color: #fff !important;
+  border-color: transparent;
+  box-shadow: 0 12px 24px -14px rgba(31, 138, 110, 0.95);
+}
+
+.confirm-btn-ok:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.confirm-btn-danger {
+  background: linear-gradient(145deg, #9b1c1c, #d64545) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 12px 24px -14px rgba(155, 28, 28, 0.95);
+}
+
+.confirm-btn-danger:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+@media (max-width: 420px) {
+  .confirm-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .confirm-btn-danger,
+  .confirm-btn-ok {
+    order: -1;
+  }
+}
+
+.modal-card label {
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.86rem;
+  font-weight: 550;
+  color: var(--ink-soft);
+  margin-bottom: 0;
+}
+
+.modal-card input,
+.modal-card textarea {
+  width: 100%;
+  border: 1px solid var(--line-strong);
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.78rem 0.9rem;
+  outline: none;
+}
+
+.modal-card input:focus,
+.modal-card textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .empty,
@@ -1194,29 +1492,47 @@ textarea {
     position: fixed;
     inset: 0 auto 0 0;
     width: min(280px, 86vw);
-    transform: translateX(-105%);
+    /* Kill entrance animation — its fill-mode was locking transform:none
+       so the drawer could never slide closed on mobile. */
+    animation: none !important;
+    transform: translate3d(-110%, 0, 0);
     transition: transform 0.35s var(--ease);
     height: 100dvh;
+    z-index: 60;
+    pointer-events: none;
+    visibility: hidden;
   }
 
   .sidebar.open {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
+    pointer-events: auto;
+    visibility: visible;
+  }
+
+  .sidebar-close {
+    display: inline-flex;
   }
 
   .sidebar-backdrop {
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(12, 18, 16, 0.45);
+    width: 100%;
+    height: 100%;
+    background: rgba(12, 18, 16, 0.55);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s;
-    z-index: 28;
+    z-index: 55;
   }
 
   .sidebar-backdrop.show {
     opacity: 1;
     pointer-events: auto;
+  }
+
+  .mobile-bar {
+    z-index: 40;
   }
 
   .auth-wrap {
@@ -1251,6 +1567,19 @@ textarea {
     grid-template-columns: 1fr auto;
     align-items: center;
     justify-items: stretch;
+  }
+
+  .action-btns {
+    justify-content: flex-start;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .modal-actions .btn-primary,
+  .modal-actions .btn-secondary {
+    width: 100%;
   }
 }
 
