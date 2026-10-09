@@ -55,16 +55,16 @@ export function ExpenseForm({ defaultSpentBy = "", onDone }: Props) {
           <input
             name="title"
             required
-            placeholder="e.g. Glass set for kitchen"
+            placeholder="e.g. Jali / wire mesh"
           />
         </label>
         <label>
-          Who spent?
+          Who spent from the pot?
           <input
             name="spentBy"
             required
             defaultValue={defaultSpentBy}
-            placeholder="e.g. John"
+            placeholder="e.g. Ali"
           />
         </label>
         <label>
@@ -75,7 +75,7 @@ export function ExpenseForm({ defaultSpentBy = "", onDone }: Props) {
             min="0.01"
             step="0.01"
             required
-            placeholder="100"
+            placeholder="2000"
           />
         </label>
         <label>
@@ -84,14 +84,18 @@ export function ExpenseForm({ defaultSpentBy = "", onDone }: Props) {
         </label>
         <label className="full">
           Note (optional)
-          <textarea name="note" rows={3} placeholder="Any extra detail…" />
+          <textarea
+            name="note"
+            rows={3}
+            placeholder="Optional — shop name, receipt, why…"
+          />
         </label>
       </div>
 
       {error ? <p className="form-error">{error}</p> : null}
 
       <button type="submit" className="btn-primary" disabled={busy}>
-        {busy ? "Saving…" : "Save expense"}
+        {busy ? "Saving…" : "Save buy"}
       </button>
     </form>
   );

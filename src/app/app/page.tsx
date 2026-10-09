@@ -1,11 +1,11 @@
-import Link from "next/link";
 import mongoose from "mongoose";
 import { getSession } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
+import { getBusinessSummary } from "@/lib/business";
 import { formatDate, formatMoney } from "@/lib/format";
 import { Expense } from "@/models/Expense";
 import { redirect } from "next/navigation";
-import { AnimatedNumber } from "@/components/AnimatedNumber";
+import { BusinessSetupCard } from "@/components/BusinessSetupCard";
 import { DashboardCharts } from "@/components/DashboardCharts";
 
 export default async function DashboardPage() {
@@ -15,25 +15,11 @@ export default async function DashboardPage() {
   await connectDB();
   const userId = new mongoose.Types.ObjectId(session.id);
   const now = new Date();
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-
   const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
 
-  const [totals, monthAgg, byPerson, recent, monthlyRaw] = await Promise.all([
-    Expense.aggregate([
-      { $match: { createdBy: userId } },
-      {
-        $group: {
-          _id: null,
-          allTime: { $sum: "$amount" },
-          count: { $sum: 1 },
-        },
-      },
-    ]),
-    Expense.aggregate([
-      { $match: { createdBy: userId, date: { $gte: monthStart } } },
-      { $group: { _id: null, total: { $sum: "$amount" }, count: { $sum: 1 } } },
-    ]),
+  const [summary, recent, byPerson, monthlyRaw] = await Promise.all([
+    getBusinessSummary(session.id),
+    Expense.find({ createdBy: userId }).sort({ date: -1 }).limit(6).lean(),
     Expense.aggregate([
       { $match: { createdBy: userId } },
       {
@@ -46,7 +32,6 @@ export default async function DashboardPage() {
       { $sort: { total: -1 } },
       { $limit: 8 },
     ]),
-    Expense.find({ createdBy: userId }).sort({ date: -1 }).limit(6).lean(),
     Expense.aggregate([
       { $match: { createdBy: userId, date: { $gte: sixMonthsAgo } } },
       {
@@ -62,12 +47,22 @@ export default async function DashboardPage() {
     ]),
   ]);
 
-  const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const monthLabels = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   const monthlyMap = new Map(
-    monthlyRaw.map((r) => [
-      `${r._id.y}-${r._id.m}`,
-      r.total as number,
-    ]),
+    monthlyRaw.map((r) => [`${r._id.y}-${r._id.m}`, r.total as number]),
   );
 
   const monthly = Array.from({ length: 6 }, (_, i) => {
@@ -79,70 +74,40 @@ export default async function DashboardPage() {
     };
   });
 
-  const stats = {
-    allTime: totals[0]?.allTime || 0,
-    count: totals[0]?.count || 0,
-    thisMonth: monthAgg[0]?.total || 0,
-    byPerson: byPerson.map((r) => ({
-      name: r._id as string,
-      total: r.total as number,
-      count: r.count as number,
-    })),
-    recent: recent.map((e) => ({
-      id: String(e._id),
-      title: e.title,
-      amount: e.amount,
-      spentBy: e.spentBy,
-      date: e.date,
-    })),
-  };
+  const byPersonRows = byPerson.map((r) => ({
+    name: r._id as string,
+    total: r.total as number,
+    count: r.count as number,
+  }));
+
+  const planned =
+    summary.business.targetCapital || summary.committedTotal || 0;
 
   return (
     <>
-      <div className="page-head">
-        <div>
-          <h1>Overview</h1>
-          <p>Live totals, charts, and recent activity.</p>
-        </div>
-        <Link href="/app/add" className="btn-primary btn-pulse">
-          Add expense
-        </Link>
-      </div>
+      <BusinessSetupCard
+        businessName={summary.business.name}
+        partners={summary.partners}
+        plannedTotal={planned}
+        contributedTotal={summary.contributedTotal}
+        pendingTotal={summary.pendingCapital}
+        spentTotal={summary.spentTotal}
+        cashLeft={summary.cashLeft}
+      />
 
-      <div className="stats">
-        <div className="stat">
-          <span>This month</span>
-          <strong>
-            <AnimatedNumber value={stats.thisMonth} prefix="Rs" />
-          </strong>
-        </div>
-        <div className="stat">
-          <span>All time</span>
-          <strong>
-            <AnimatedNumber value={stats.allTime} prefix="Rs" />
-          </strong>
-        </div>
-        <div className="stat">
-          <span>Entries</span>
-          <strong>
-            <AnimatedNumber value={stats.count} />
-          </strong>
-        </div>
-      </div>
-
-      <DashboardCharts monthly={monthly} byPerson={stats.byPerson} />
+      <DashboardCharts monthly={monthly} byPerson={byPersonRows} />
 
       <div className="panels" style={{ marginTop: "1rem" }}>
         <section className="panel">
-          <h2>Recent expenses</h2>
-          {!stats.recent.length ? (
+          <h2>Recent buys</h2>
+          {!recent.length ? (
             <div className="empty soft">
-              Nothing logged yet — add your first spend to wake the charts.
+              No spends yet — log jali, paint, plastic, feed, and so on.
             </div>
           ) : (
             <ul className="mini-list">
-              {stats.recent.map((e) => (
-                <li key={e.id}>
+              {recent.map((e) => (
+                <li key={String(e._id)}>
                   <div>
                     <strong>{e.title}</strong>
                     <p>
@@ -157,19 +122,19 @@ export default async function DashboardPage() {
         </section>
 
         <section className="panel">
-          <h2>Top spenders</h2>
-          {!stats.byPerson.length ? (
+          <h2>Who spent from the pot</h2>
+          {!byPersonRows.length ? (
             <div className="empty soft">
-              People will rank here after you log expenses.
+              Names appear here after you log buys.
             </div>
           ) : (
             <ul className="mini-list">
-              {stats.byPerson.map((p) => (
+              {byPersonRows.map((p) => (
                 <li key={p.name}>
                   <div>
                     <strong>{p.name}</strong>
                     <p>
-                      {p.count} expense{p.count === 1 ? "" : "s"}
+                      {p.count} buy{p.count === 1 ? "" : "s"}
                     </p>
                   </div>
                   <span className="amount">{formatMoney(p.total)}</span>

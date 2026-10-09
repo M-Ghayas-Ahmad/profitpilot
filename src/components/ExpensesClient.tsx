@@ -139,8 +139,8 @@ export function ExpensesClient() {
             >
               <div className="modal-head">
                 <div>
-                  <h2 id="edit-expense-title">Edit expense</h2>
-                  <p>Update the details, then save.</p>
+                  <h2 id="edit-expense-title">Edit buy</h2>
+                  <p>Update what left the pot, then save.</p>
                 </div>
                 <button
                   type="button"
@@ -159,7 +159,7 @@ export function ExpensesClient() {
                     <input name="title" required defaultValue={editing.title} />
                   </label>
                   <label>
-                    Who spent?
+                    Who spent from the pot?
                     <input
                       name="spentBy"
                       required
@@ -211,7 +211,7 @@ export function ExpensesClient() {
                     className="btn-primary"
                     disabled={editBusy}
                   >
-                    {editBusy ? "Saving…" : "Update expense"}
+                    {editBusy ? "Saving…" : "Update buy"}
                   </button>
                 </div>
               </form>
@@ -232,7 +232,7 @@ export function ExpensesClient() {
         <input
           value={spentBy}
           onChange={(e) => setSpentBy(e.target.value)}
-          placeholder="Filter by person (John…)"
+          placeholder="Filter by person (Ali…)"
         />
         <button type="submit" className="btn-secondary">
           Apply
@@ -241,7 +241,7 @@ export function ExpensesClient() {
 
       <div className="summary-strip">
         <span>
-          {expenses.length} expense{expenses.length === 1 ? "" : "s"}
+          {expenses.length} buy{expenses.length === 1 ? "" : "s"} from the pot
         </span>
         <strong>{formatMoney(total)}</strong>
       </div>
@@ -251,7 +251,7 @@ export function ExpensesClient() {
 
       {!loading && expenses.length === 0 ? (
         <div className="empty">
-          No expenses yet. Add one like “John bought glass — Rs 100”.
+          No buys yet. Example: “Jali — Rs 2,000” spent by Ali.
         </div>
       ) : null}
 
@@ -295,10 +295,10 @@ export function ExpensesClient() {
 
       <ConfirmModal
         open={Boolean(deleting)}
-        title="Delete expense?"
+        title="Delete this buy?"
         message={
           deleting
-            ? `Remove “${deleting.title}” (${formatMoney(deleting.amount)}) by ${deleting.spentBy}? This cannot be undone.`
+            ? `Remove “${deleting.title}” (${formatMoney(deleting.amount)}) by ${deleting.spentBy}? Cash left will go back up.`
             : ""
         }
         confirmLabel="Delete"

@@ -13,7 +13,7 @@ export default async function HomePage() {
           <span className="brand-mark">PP</span>
           <div>
             <strong>ProfitPilot</strong>
-            <p>Expense command</p>
+            <p>Partner capital ledger</p>
           </div>
         </div>
         <div className="cta-row">
@@ -21,26 +21,52 @@ export default async function HomePage() {
             Log in
           </Link>
           <Link href="/register" className="btn-primary">
-            Get started
+            Start free
           </Link>
         </div>
       </nav>
 
       <section className="landing-hero">
-        <span className="eyebrow">Built for real households & teams</span>
         <h1>ProfitPilot</h1>
-        <p>
-          A clear ledger for every spend — who paid, what they bought, and the
-          running total. Fast on phone, sharp on desktop.
+        <p className="landing-lead">
+          Two partners. One pot. Every rupee accounted for — from the first
+          contribution to the last bag of feed.
+        </p>
+        <p className="landing-sub">
+          Commit capital, record money put in, log buys from the pot, and always
+          see cash left. Built for sheds, startups, and co-founder wallets.
         </p>
         <div className="cta-row">
           <Link href="/register" className="btn-primary">
-            Open your dashboard
+            Open the ledger
           </Link>
           <Link href="/login" className="btn-secondary">
             I have an account
           </Link>
         </div>
+
+        <ol className="landing-steps" aria-label="How money moves">
+          <li>
+            <span>1</span>
+            <strong>Commit</strong>
+            <em>Agree each partner’s share</em>
+          </li>
+          <li>
+            <span>2</span>
+            <strong>Put in</strong>
+            <em>Cash enters the pot</em>
+          </li>
+          <li>
+            <span>3</span>
+            <strong>Spend</strong>
+            <em>Buys leave the pot</em>
+          </li>
+          <li>
+            <span>4</span>
+            <strong>Cash left</strong>
+            <em>What you can still use</em>
+          </li>
+        </ol>
       </section>
     </div>
   );

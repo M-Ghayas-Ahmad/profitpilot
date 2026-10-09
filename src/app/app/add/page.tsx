@@ -1,5 +1,6 @@
 import { getSession } from "@/lib/auth";
 import { ExpenseForm } from "@/components/ExpenseForm";
+import Link from "next/link";
 
 export default async function AddExpensePage() {
   const session = await getSession();
@@ -8,9 +9,14 @@ export default async function AddExpensePage() {
     <>
       <div className="page-head">
         <div>
-          <h1>Add expense</h1>
-          <p>Example: John bought glass — amount Rs 100, person John.</p>
+          <h1>Log a buy</h1>
+          <p>
+            Money leaving the pot. Example: jali for Rs 2,000 — spent by Ali.
+          </p>
         </div>
+        <Link href="/app/expenses" className="btn-secondary">
+          View all buys
+        </Link>
       </div>
       <ExpenseForm defaultSpentBy={session?.name || ""} />
     </>

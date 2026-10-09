@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 const NAV = [
   {
     href: "/app",
-    label: "Overview",
+    label: "The pot",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M4 13h6V4H4v9zm10 7h6V4h-6v16zM4 20h6v-5H4v5z" />
@@ -15,8 +15,17 @@ const NAV = [
     ),
   },
   {
+    href: "/app/capital",
+    label: "Capital",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <path d="M12 3v18M7 8h8a3 3 0 010 6H9a3 3 0 000 6h8" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
     href: "/app/expenses",
-    label: "Expenses",
+    label: "Buys",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M4 6h16M4 12h16M4 18h10" strokeLinecap="round" />
@@ -25,7 +34,7 @@ const NAV = [
   },
   {
     href: "/app/add",
-    label: "Add expense",
+    label: "Log a buy",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M12 5v14M5 12h14" strokeLinecap="round" />
@@ -34,7 +43,7 @@ const NAV = [
   },
   {
     href: "/app/records",
-    label: "Records",
+    label: "Activity",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <rect x="4" y="4" width="16" height="16" rx="2" />
@@ -98,16 +107,13 @@ export function AppShell({
         onClick={() => setOpen(false)}
       />
 
-      <aside
-        className={`sidebar${open ? " open" : ""}`}
-        aria-hidden={!open ? undefined : undefined}
-      >
+      <aside className={`sidebar${open ? " open" : ""}`}>
         <div className="sidebar-top">
           <div className="brand">
             <span className="brand-mark">PP</span>
             <div>
               <strong>ProfitPilot</strong>
-              <p className="brand-sub">Expense command</p>
+              <p className="brand-sub">Partner capital ledger</p>
             </div>
           </div>
           <button

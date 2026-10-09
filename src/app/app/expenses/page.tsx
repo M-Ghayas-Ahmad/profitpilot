@@ -6,11 +6,14 @@ export default function ExpensesPage() {
     <>
       <div className="page-head">
         <div>
-          <h1>All expenses</h1>
-          <p>Search by person or what was bought.</p>
+          <h1>Buys from the pot</h1>
+          <p>
+            Every purchase that leaves the cash pot — jali, paint, feed, tools,
+            and more.
+          </p>
         </div>
         <Link href="/app/add" className="btn-primary">
-          Add expense
+          Log a buy
         </Link>
       </div>
       <ExpensesClient />
