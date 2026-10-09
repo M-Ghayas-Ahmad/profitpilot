@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope, Syne } from "next/font/google";
+import { Manrope, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 
 const body = Manrope({
@@ -8,10 +8,10 @@ const body = Manrope({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-const display = Syne({
+const display = Source_Serif_4({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["600", "700"],
 });
 
 export const metadata: Metadata = {

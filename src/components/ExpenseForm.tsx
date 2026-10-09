@@ -3,15 +3,27 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
+type PartnerOption = { id: string; name: string };
+
 type Props = {
+  partners?: PartnerOption[];
   defaultSpentBy?: string;
   onDone?: () => void;
 };
 
-export function ExpenseForm({ defaultSpentBy = "", onDone }: Props) {
+export function ExpenseForm({
+  partners = [],
+  defaultSpentBy = "",
+  onDone,
+}: Props) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+
+  const initialSpentBy =
+    defaultSpentBy ||
+    partners[0]?.name ||
+    "";
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -60,12 +72,22 @@ export function ExpenseForm({ defaultSpentBy = "", onDone }: Props) {
         </label>
         <label>
           Who spent from the pot?
-          <input
-            name="spentBy"
-            required
-            defaultValue={defaultSpentBy}
-            placeholder="e.g. Ali"
-          />
+          {partners.length > 0 ? (
+            <select name="spentBy" required defaultValue={initialSpentBy}>
+              {partners.map((p) => (
+                <option key={p.id} value={p.name}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              name="spentBy"
+              required
+              defaultValue={initialSpentBy}
+              placeholder="Partner name"
+            />
+          )}
         </label>
         <label>
           Amount (Rs)
@@ -93,6 +115,12 @@ export function ExpenseForm({ defaultSpentBy = "", onDone }: Props) {
       </div>
 
       {error ? <p className="form-error">{error}</p> : null}
+
+      {partners.length === 0 ? (
+        <p className="form-hint">
+          Tip: add partners under Capital first so buys use the right names.
+        </p>
+      ) : null}
 
       <button type="submit" className="btn-primary" disabled={busy}>
         {busy ? "Saving…" : "Save buy"}

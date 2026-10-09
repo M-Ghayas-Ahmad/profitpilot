@@ -14,13 +14,19 @@ type Expense = {
   date: string;
 };
 
+type PartnerOption = { id: string; name: string };
+
 function toDateInput(value: string) {
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return new Date().toISOString().slice(0, 10);
   return d.toISOString().slice(0, 10);
 }
 
-export function ExpensesClient() {
+export function ExpensesClient({
+  partners = [],
+}: {
+  partners?: PartnerOption[];
+}) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -160,11 +166,35 @@ export function ExpensesClient() {
                   </label>
                   <label>
                     Who spent from the pot?
-                    <input
-                      name="spentBy"
-                      required
-                      defaultValue={editing.spentBy}
-                    />
+                    {partners.length > 0 ? (
+                      <select
+                        name="spentBy"
+                        required
+                        defaultValue={
+                          partners.some((p) => p.name === editing.spentBy)
+                            ? editing.spentBy
+                            : partners[0].name
+                        }
+                      >
+                        {!partners.some((p) => p.name === editing.spentBy) &&
+                        editing.spentBy ? (
+                          <option value={editing.spentBy}>
+                            {editing.spentBy} (old)
+                          </option>
+                        ) : null}
+                        {partners.map((p) => (
+                          <option key={p.id} value={p.name}>
+                            {p.name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        name="spentBy"
+                        required
+                        defaultValue={editing.spentBy}
+                      />
+                    )}
                   </label>
                   <label>
                     Amount (Rs)
@@ -229,11 +259,25 @@ export function ExpensesClient() {
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search title, person, note…"
         />
-        <input
-          value={spentBy}
-          onChange={(e) => setSpentBy(e.target.value)}
-          placeholder="Filter by person (Ali…)"
-        />
+        {partners.length > 0 ? (
+          <select
+            value={spentBy}
+            onChange={(e) => setSpentBy(e.target.value)}
+          >
+            <option value="">All partners</option>
+            {partners.map((p) => (
+              <option key={p.id} value={p.name}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            value={spentBy}
+            onChange={(e) => setSpentBy(e.target.value)}
+            placeholder="Filter by partner"
+          />
+        )}
         <button type="submit" className="btn-secondary">
           Apply
         </button>
@@ -251,7 +295,8 @@ export function ExpensesClient() {
 
       {!loading && expenses.length === 0 ? (
         <div className="empty">
-          No buys yet. Example: “Jali — Rs 2,000” spent by Ali.
+          No buys yet. Log one and pick a partner (e.g.{" "}
+          {partners[0]?.name || "Saeed"}).
         </div>
       ) : null}
 

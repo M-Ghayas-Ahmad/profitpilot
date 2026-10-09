@@ -29,8 +29,6 @@ export default async function DashboardPage() {
           count: { $sum: 1 },
         },
       },
-      { $sort: { total: -1 } },
-      { $limit: 8 },
     ]),
     Expense.aggregate([
       { $match: { createdBy: userId, date: { $gte: sixMonthsAgo } } },
@@ -74,11 +72,19 @@ export default async function DashboardPage() {
     };
   });
 
-  const byPersonRows = byPerson.map((r) => ({
-    name: r._id as string,
-    total: r.total as number,
-    count: r.count as number,
-  }));
+  // Only current partners are listed, including ones who haven't spent yet.
+  const spendByName = new Map(
+    byPerson.map((r) => [
+      r._id as string,
+      { total: r.total as number, count: r.count as number },
+    ]),
+  );
+  const byPersonRows = summary.partners
+    .map((p) => {
+      const spend = spendByName.get(p.name);
+      return { name: p.name, total: spend?.total || 0, count: spend?.count || 0 };
+    })
+    .sort((a, b) => b.total - a.total);
 
   const planned =
     summary.business.targetCapital || summary.committedTotal || 0;

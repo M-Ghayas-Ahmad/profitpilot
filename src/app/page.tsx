@@ -11,17 +11,17 @@ export default async function HomePage() {
       <nav className="landing-nav">
         <div className="brand">
           <span className="brand-mark">PP</span>
-          <div>
+          <div className="brand-text">
             <strong>ProfitPilot</strong>
-            <p>Partner capital ledger</p>
+            <p className="brand-sub">Expense command</p>
           </div>
         </div>
-        <div className="cta-row">
-          <Link href="/login" className="btn-secondary">
+        <div className="landing-nav-actions">
+          <Link href="/login" className="btn-secondary btn-compact">
             Log in
           </Link>
-          <Link href="/register" className="btn-primary">
-            Start free
+          <Link href="/register" className="btn-primary btn-compact landing-nav-cta">
+            Get started
           </Link>
         </div>
       </nav>
@@ -36,7 +36,7 @@ export default async function HomePage() {
           Commit capital, record money put in, log buys from the pot, and always
           see cash left. Built for sheds, startups, and co-founder wallets.
         </p>
-        <div className="cta-row">
+        <div className="landing-hero-actions">
           <Link href="/register" className="btn-primary">
             Open the ledger
           </Link>

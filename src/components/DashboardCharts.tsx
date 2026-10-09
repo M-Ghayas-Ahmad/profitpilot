@@ -51,7 +51,7 @@ export function DashboardCharts({
   }));
 
   const hasMonthData = monthly.some((m) => m.total > 0);
-  const hasPersonData = pieData.length > 0;
+  const hasPersonData = pieData.some((p) => p.value > 0);
 
   return (
     <div className="charts-grid">
@@ -98,8 +98,7 @@ export function DashboardCharts({
           </div>
         ) : (
           <div className="chart-empty">
-            <div className="pulse-ring" />
-            <p>Log buys to see the monthly spend curve animate in.</p>
+            <p>Log buys to see the monthly spend curve.</p>
           </div>
         )}
       </section>
@@ -142,7 +141,6 @@ export function DashboardCharts({
           </div>
         ) : (
           <div className="chart-empty">
-            <div className="pulse-ring" />
             <p>When partners spend from the pot, their share shows here.</p>
           </div>
         )}

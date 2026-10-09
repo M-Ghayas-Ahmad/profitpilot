@@ -6,6 +6,7 @@ import { logActivity } from "@/lib/activity";
 import { connectDB } from "@/lib/db";
 import { getOrCreateBusiness } from "@/lib/business";
 import { Contribution } from "@/models/Contribution";
+import { Expense } from "@/models/Expense";
 import { Partner } from "@/models/Partner";
 
 const patchSchema = z.object({
@@ -55,6 +56,10 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
       await Contribution.updateMany(
         { partnerId: partner._id },
         { $set: { partnerName: partner.name } },
+      );
+      await Expense.updateMany(
+        { createdBy: partner.createdBy, spentBy: prevName },
+        { $set: { spentBy: partner.name } },
       );
     }
 

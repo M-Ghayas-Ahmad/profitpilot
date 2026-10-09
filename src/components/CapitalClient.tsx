@@ -462,7 +462,7 @@ export function CapitalClient({
           className={tab === "contributions" ? "active" : ""}
           onClick={() => setTab("contributions")}
         >
-          Money in
+          Add Money into the pot
           <em>{contributions.length}</em>
         </button>
         <button
@@ -490,7 +490,7 @@ export function CapitalClient({
 
           {!partners.length ? (
             <div className="empty soft">
-              No partners yet. Add Ali and Bilal (or your real names) below.
+              No partners yet. Add your partners below.
             </div>
           ) : (
             <div className="entity-grid">
@@ -558,7 +558,7 @@ export function CapitalClient({
               <div className="form-grid">
                 <label>
                   Partner name
-                  <input name="name" required placeholder="e.g. Ali" />
+                  <input name="name" required placeholder="e.g. Junaid" />
                 </label>
                 <label>
                   Committed amount (Rs)

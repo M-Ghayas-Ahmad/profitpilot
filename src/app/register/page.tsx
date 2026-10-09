@@ -75,7 +75,7 @@ export default function RegisterPage() {
               name="name"
               required
               autoComplete="name"
-              placeholder="Ali"
+              placeholder="Your name"
             />
           </label>
           <label>
