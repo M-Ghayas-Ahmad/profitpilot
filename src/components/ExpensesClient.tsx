@@ -14,13 +14,19 @@ type Expense = {
   date: string;
 };
 
+type PartnerOption = { id: string; name: string };
+
 function toDateInput(value: string) {
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return new Date().toISOString().slice(0, 10);
   return d.toISOString().slice(0, 10);
 }
 
-export function ExpensesClient() {
+export function ExpensesClient({
+  partners = [],
+}: {
+  partners?: PartnerOption[];
+}) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -139,8 +145,8 @@ export function ExpensesClient() {
             >
               <div className="modal-head">
                 <div>
-                  <h2 id="edit-expense-title">Edit expense</h2>
-                  <p>Update the details, then save.</p>
+                  <h2 id="edit-expense-title">Edit buy</h2>
+                  <p>Update what left the pot, then save.</p>
                 </div>
                 <button
                   type="button"
@@ -159,12 +165,36 @@ export function ExpensesClient() {
                     <input name="title" required defaultValue={editing.title} />
                   </label>
                   <label>
-                    Who spent?
-                    <input
-                      name="spentBy"
-                      required
-                      defaultValue={editing.spentBy}
-                    />
+                    Who spent from the pot?
+                    {partners.length > 0 ? (
+                      <select
+                        name="spentBy"
+                        required
+                        defaultValue={
+                          partners.some((p) => p.name === editing.spentBy)
+                            ? editing.spentBy
+                            : partners[0].name
+                        }
+                      >
+                        {!partners.some((p) => p.name === editing.spentBy) &&
+                        editing.spentBy ? (
+                          <option value={editing.spentBy}>
+                            {editing.spentBy} (old)
+                          </option>
+                        ) : null}
+                        {partners.map((p) => (
+                          <option key={p.id} value={p.name}>
+                            {p.name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        name="spentBy"
+                        required
+                        defaultValue={editing.spentBy}
+                      />
+                    )}
                   </label>
                   <label>
                     Amount (Rs)
@@ -211,7 +241,7 @@ export function ExpensesClient() {
                     className="btn-primary"
                     disabled={editBusy}
                   >
-                    {editBusy ? "Saving…" : "Update expense"}
+                    {editBusy ? "Saving…" : "Update buy"}
                   </button>
                 </div>
               </form>
@@ -229,11 +259,25 @@ export function ExpensesClient() {
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search title, person, note…"
         />
-        <input
-          value={spentBy}
-          onChange={(e) => setSpentBy(e.target.value)}
-          placeholder="Filter by person (John…)"
-        />
+        {partners.length > 0 ? (
+          <select
+            value={spentBy}
+            onChange={(e) => setSpentBy(e.target.value)}
+          >
+            <option value="">All partners</option>
+            {partners.map((p) => (
+              <option key={p.id} value={p.name}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            value={spentBy}
+            onChange={(e) => setSpentBy(e.target.value)}
+            placeholder="Filter by partner"
+          />
+        )}
         <button type="submit" className="btn-secondary">
           Apply
         </button>
@@ -241,7 +285,7 @@ export function ExpensesClient() {
 
       <div className="summary-strip">
         <span>
-          {expenses.length} expense{expenses.length === 1 ? "" : "s"}
+          {expenses.length} buy{expenses.length === 1 ? "" : "s"} from the pot
         </span>
         <strong>{formatMoney(total)}</strong>
       </div>
@@ -251,7 +295,8 @@ export function ExpensesClient() {
 
       {!loading && expenses.length === 0 ? (
         <div className="empty">
-          No expenses yet. Add one like “John bought glass — Rs 100”.
+          No buys yet. Log one and pick a partner (e.g.{" "}
+          {partners[0]?.name || "Saeed"}).
         </div>
       ) : null}
 
@@ -295,10 +340,10 @@ export function ExpensesClient() {
 
       <ConfirmModal
         open={Boolean(deleting)}
-        title="Delete expense?"
+        title="Delete this buy?"
         message={
           deleting
-            ? `Remove “${deleting.title}” (${formatMoney(deleting.amount)}) by ${deleting.spentBy}? This cannot be undone.`
+            ? `Remove “${deleting.title}” (${formatMoney(deleting.amount)}) by ${deleting.spentBy}? Cash left will go back up.`
             : ""
         }
         confirmLabel="Delete"

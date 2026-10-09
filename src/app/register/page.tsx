@@ -29,7 +29,7 @@ export default function RegisterPage() {
       setError(data.error || "Could not create account");
       return;
     }
-    router.replace("/app");
+    router.replace("/app/capital");
     router.refresh();
   }
 
@@ -40,20 +40,34 @@ export default function RegisterPage() {
           <span className="brand-mark">PP</span>
           <div>
             <strong>ProfitPilot</strong>
-            <p className="brand-sub">Expense command</p>
+            <p className="brand-sub">Partner capital ledger</p>
           </div>
         </div>
-        <h2>Start a ledger in under a minute.</h2>
+        <h2>Start the ledger before the first rupee moves.</h2>
         <p>
-          Each account is private. Log spends like “John bought glass — Rs 100”
-          and watch the overview update live.
+          Perfect for sheds, stalls, and two-person startups — like an egg
+          business where both partners put money in as needed.
         </p>
+        <ol className="auth-flow">
+          <li>
+            <strong>1</strong> Name the business
+          </li>
+          <li>
+            <strong>2</strong> Add partners + commitments
+          </li>
+          <li>
+            <strong>3</strong> Record money put in
+          </li>
+          <li>
+            <strong>4</strong> Log every buy from the pot
+          </li>
+        </ol>
       </aside>
 
       <div className="auth-panel">
         <form className="auth-card" onSubmit={onSubmit}>
           <h1>Create account</h1>
-          <p>Set up your workspace and start tracking.</p>
+          <p>Then set up partners and capital in one minute.</p>
 
           <label>
             Your name
@@ -61,7 +75,7 @@ export default function RegisterPage() {
               name="name"
               required
               autoComplete="name"
-              placeholder="Ghayas"
+              placeholder="Your name"
             />
           </label>
           <label>

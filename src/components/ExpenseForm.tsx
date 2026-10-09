@@ -3,15 +3,27 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
+type PartnerOption = { id: string; name: string };
+
 type Props = {
+  partners?: PartnerOption[];
   defaultSpentBy?: string;
   onDone?: () => void;
 };
 
-export function ExpenseForm({ defaultSpentBy = "", onDone }: Props) {
+export function ExpenseForm({
+  partners = [],
+  defaultSpentBy = "",
+  onDone,
+}: Props) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+
+  const initialSpentBy =
+    defaultSpentBy ||
+    partners[0]?.name ||
+    "";
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -55,17 +67,27 @@ export function ExpenseForm({ defaultSpentBy = "", onDone }: Props) {
           <input
             name="title"
             required
-            placeholder="e.g. Glass set for kitchen"
+            placeholder="e.g. Jali / wire mesh"
           />
         </label>
         <label>
-          Who spent?
-          <input
-            name="spentBy"
-            required
-            defaultValue={defaultSpentBy}
-            placeholder="e.g. John"
-          />
+          Who spent from the pot?
+          {partners.length > 0 ? (
+            <select name="spentBy" required defaultValue={initialSpentBy}>
+              {partners.map((p) => (
+                <option key={p.id} value={p.name}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              name="spentBy"
+              required
+              defaultValue={initialSpentBy}
+              placeholder="Partner name"
+            />
+          )}
         </label>
         <label>
           Amount (Rs)
@@ -75,7 +97,7 @@ export function ExpenseForm({ defaultSpentBy = "", onDone }: Props) {
             min="0.01"
             step="0.01"
             required
-            placeholder="100"
+            placeholder="2000"
           />
         </label>
         <label>
@@ -84,14 +106,24 @@ export function ExpenseForm({ defaultSpentBy = "", onDone }: Props) {
         </label>
         <label className="full">
           Note (optional)
-          <textarea name="note" rows={3} placeholder="Any extra detail…" />
+          <textarea
+            name="note"
+            rows={3}
+            placeholder="Optional — shop name, receipt, why…"
+          />
         </label>
       </div>
 
       {error ? <p className="form-error">{error}</p> : null}
 
+      {partners.length === 0 ? (
+        <p className="form-hint">
+          Tip: add partners under Capital first so buys use the right names.
+        </p>
+      ) : null}
+
       <button type="submit" className="btn-primary" disabled={busy}>
-        {busy ? "Saving…" : "Save expense"}
+        {busy ? "Saving…" : "Save buy"}
       </button>
     </form>
   );

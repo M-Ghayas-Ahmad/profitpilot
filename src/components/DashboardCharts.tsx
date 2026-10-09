@@ -15,7 +15,7 @@ import {
   YAxis,
 } from "recharts";
 
-const COLORS = ["#1f8a6e", "#2aa882", "#0f766e", "#5bb89a", "#134e4a", "#99c9b8"];
+const COLORS = ["#c47a1a", "#e09a2f", "#1f7a5c", "#2a3140", "#b5473a", "#6a7385"];
 
 type MonthPoint = { label: string; total: number };
 type PersonPoint = { name: string; total: number; count: number };
@@ -51,13 +51,13 @@ export function DashboardCharts({
   }));
 
   const hasMonthData = monthly.some((m) => m.total > 0);
-  const hasPersonData = pieData.length > 0;
+  const hasPersonData = pieData.some((p) => p.value > 0);
 
   return (
     <div className="charts-grid">
       <section className="panel chart-panel">
         <div className="panel-head-row">
-          <h2>Spend trend</h2>
+          <h2>Buys over time</h2>
           <span className="chip">Last 6 months</span>
         </div>
         {hasMonthData ? (
@@ -66,19 +66,19 @@ export function DashboardCharts({
               <AreaChart data={monthly}>
                 <defs>
                   <linearGradient id="spendFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#1f8a6e" stopOpacity={0.35} />
-                    <stop offset="100%" stopColor="#1f8a6e" stopOpacity={0.02} />
+                    <stop offset="0%" stopColor="#c47a1a" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="#c47a1a" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 6" stroke="rgba(12,18,16,0.08)" />
+                <CartesianGrid strokeDasharray="3 6" stroke="rgba(18,21,28,0.08)" />
                 <XAxis
                   dataKey="label"
-                  tick={{ fill: "#6b7a73", fontSize: 12 }}
+                  tick={{ fill: "#6a7385", fontSize: 12 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fill: "#6b7a73", fontSize: 12 }}
+                  tick={{ fill: "#6a7385", fontSize: 12 }}
                   axisLine={false}
                   tickLine={false}
                   width={48}
@@ -87,7 +87,7 @@ export function DashboardCharts({
                 <Area
                   type="monotone"
                   dataKey="total"
-                  stroke="#1f8a6e"
+                  stroke="#c47a1a"
                   strokeWidth={2.5}
                   fill="url(#spendFill)"
                   animationDuration={1200}
@@ -98,16 +98,15 @@ export function DashboardCharts({
           </div>
         ) : (
           <div className="chart-empty">
-            <div className="pulse-ring" />
-            <p>Add expenses to see your monthly spend curve animate in.</p>
+            <p>Log buys to see the monthly spend curve.</p>
           </div>
         )}
       </section>
 
       <section className="panel chart-panel">
         <div className="panel-head-row">
-          <h2>By person</h2>
-          <span className="chip">Share of spend</span>
+          <h2>Who spent</h2>
+          <span className="chip">Share of pot</span>
         </div>
         {hasPersonData ? (
           <div className="chart-box pie-wrap">
@@ -142,30 +141,29 @@ export function DashboardCharts({
           </div>
         ) : (
           <div className="chart-empty">
-            <div className="pulse-ring" />
-            <p>When people spend, their share shows here as a donut chart.</p>
+            <p>When partners spend from the pot, their share shows here.</p>
           </div>
         )}
       </section>
 
       <section className="panel chart-panel chart-wide">
         <div className="panel-head-row">
-          <h2>Person comparison</h2>
+          <h2>Spend comparison</h2>
           <span className="chip">Bar view</span>
         </div>
         {hasPersonData ? (
           <div className="chart-box">
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={byPerson}>
-                <CartesianGrid strokeDasharray="3 6" stroke="rgba(12,18,16,0.08)" />
+                <CartesianGrid strokeDasharray="3 6" stroke="rgba(18,21,28,0.08)" />
                 <XAxis
                   dataKey="name"
-                  tick={{ fill: "#6b7a73", fontSize: 12 }}
+                  tick={{ fill: "#6a7385", fontSize: 12 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fill: "#6b7a73", fontSize: 12 }}
+                  tick={{ fill: "#6a7385", fontSize: 12 }}
                   axisLine={false}
                   tickLine={false}
                   width={48}
@@ -174,7 +172,7 @@ export function DashboardCharts({
                 <Bar
                   dataKey="total"
                   radius={[8, 8, 4, 4]}
-                  fill="#1f8a6e"
+                  fill="#c47a1a"
                   animationDuration={1000}
                   animationEasing="ease-out"
                 />
@@ -183,7 +181,7 @@ export function DashboardCharts({
           </div>
         ) : (
           <div className="chart-empty short">
-            <p>Bars will compare each person’s total spend.</p>
+            <p>Bars will compare each person’s total buys from the pot.</p>
           </div>
         )}
       </section>

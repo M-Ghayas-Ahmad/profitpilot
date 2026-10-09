@@ -41,20 +41,34 @@ export function LoginForm() {
           <span className="brand-mark">PP</span>
           <div>
             <strong>ProfitPilot</strong>
-            <p className="brand-sub">Expense command</p>
+            <p className="brand-sub">Partner capital ledger</p>
           </div>
         </div>
-        <h2>Know where every rupee went.</h2>
+        <h2>See the pot, not a mystery spreadsheet.</h2>
         <p>
-          Sign in to your private ledger — spends by person, month totals, and a
-          full activity trail.
+          Commitments, money put in, buys out, and cash left — one clear picture
+          for co-founders.
         </p>
+        <ol className="auth-flow">
+          <li>
+            <strong>1</strong> Partners commit capital
+          </li>
+          <li>
+            <strong>2</strong> Cash enters the pot
+          </li>
+          <li>
+            <strong>3</strong> Buys leave the pot
+          </li>
+          <li>
+            <strong>4</strong> Cash left stays honest
+          </li>
+        </ol>
       </aside>
 
       <div className="auth-panel">
         <form className="auth-card" onSubmit={onSubmit}>
           <h1>Welcome back</h1>
-          <p>Sign in to continue to your dashboard.</p>
+          <p>Sign in to your business money ledger.</p>
 
           <label>
             Email

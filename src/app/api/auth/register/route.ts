@@ -5,6 +5,7 @@ import { connectDB } from "@/lib/db";
 import { User } from "@/models/User";
 import { createSessionToken, setSessionCookie } from "@/lib/auth";
 import { logActivity } from "@/lib/activity";
+import { seedEggShedExample } from "@/lib/seedExample";
 
 const schema = z.object({
   name: z.string().trim().min(2).max(80),
@@ -53,6 +54,8 @@ export async function POST(req: Request) {
       description: "Account created successfully",
       status: "Success",
     });
+
+    await seedEggShedExample(String(user._id), { force: true });
 
     const res = NextResponse.json({
       user: { id: String(user._id), name: user.name, email: user.email },
