@@ -2,6 +2,7 @@ import mongoose, { Schema, model } from "mongoose";
 
 export type ExpenseDoc = {
   _id: mongoose.Types.ObjectId;
+  businessId: mongoose.Types.ObjectId;
   title: string;
   amount: number;
   spentBy: string;
@@ -14,6 +15,12 @@ export type ExpenseDoc = {
 
 const ExpenseSchema = new Schema<ExpenseDoc>(
   {
+    businessId: {
+      type: Schema.Types.ObjectId,
+      ref: "Business",
+      required: true,
+      index: true,
+    },
     title: { type: String, required: true, trim: true },
     amount: { type: Number, required: true, min: 0 },
     spentBy: { type: String, required: true, trim: true },
@@ -29,7 +36,7 @@ const ExpenseSchema = new Schema<ExpenseDoc>(
   { timestamps: true, strict: true },
 );
 
-ExpenseSchema.index({ createdBy: 1, date: -1 });
+ExpenseSchema.index({ businessId: 1, date: -1 });
 
 // Drop cached model so hot-reload picks up schema changes (e.g. removed category).
 if (mongoose.models.Expense) {

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { getSession } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import { getBusinessSummary } from "@/lib/business";
-import { formatDate, formatMoney } from "@/lib/format";
+import { formatDate, formatMoney, SHARED_SPENDER } from "@/lib/format";
 import { Expense } from "@/models/Expense";
 import { redirect } from "next/navigation";
 import { BusinessSetupCard } from "@/components/BusinessSetupCard";
@@ -13,15 +13,16 @@ export default async function DashboardPage() {
   if (!session) redirect("/login");
 
   await connectDB();
-  const userId = new mongoose.Types.ObjectId(session.id);
   const now = new Date();
   const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
 
-  const [summary, recent, byPerson, monthlyRaw] = await Promise.all([
-    getBusinessSummary(session.id),
-    Expense.find({ createdBy: userId }).sort({ date: -1 }).limit(6).lean(),
+  const summary = await getBusinessSummary(session.id);
+  const businessId = new mongoose.Types.ObjectId(summary.business.id);
+
+  const [recent, byPerson, monthlyRaw] = await Promise.all([
+    Expense.find({ businessId }).sort({ date: -1 }).limit(6).lean(),
     Expense.aggregate([
-      { $match: { createdBy: userId } },
+      { $match: { businessId } },
       {
         $group: {
           _id: "$spentBy",
@@ -31,7 +32,7 @@ export default async function DashboardPage() {
       },
     ]),
     Expense.aggregate([
-      { $match: { createdBy: userId, date: { $gte: sixMonthsAgo } } },
+      { $match: { businessId, date: { $gte: sixMonthsAgo } } },
       {
         $group: {
           _id: {
@@ -73,16 +74,23 @@ export default async function DashboardPage() {
   });
 
   // Only current partners are listed, including ones who haven't spent yet.
+  // Shared ("Both") buys are split equally across all partners.
   const spendByName = new Map(
     byPerson.map((r) => [
       r._id as string,
       { total: r.total as number, count: r.count as number },
     ]),
   );
+  const shared = spendByName.get(SHARED_SPENDER);
+  const shareCount = summary.partners.length || 1;
   const byPersonRows = summary.partners
     .map((p) => {
-      const spend = spendByName.get(p.name);
-      return { name: p.name, total: spend?.total || 0, count: spend?.count || 0 };
+      const own = spendByName.get(p.name);
+      return {
+        name: p.name,
+        total: (own?.total || 0) + (shared?.total || 0) / shareCount,
+        count: (own?.count || 0) + (shared?.count || 0),
+      };
     })
     .sort((a, b) => b.total - a.total);
 

@@ -5,18 +5,21 @@ import { Expense } from "@/models/Expense";
 import { Partner } from "@/models/Partner";
 import { ensureEggShedExample } from "@/lib/seedExample";
 
+/**
+ * The app runs one shared business: every account sees and edits the same
+ * partners, contributions and buys. The first account to sign in creates it.
+ */
 export async function getOrCreateBusiness(
   userId: string,
-  name = "Golden Egg Farm",
+  name = "Egg Shed Co",
 ) {
-  const createdBy = new mongoose.Types.ObjectId(userId);
-  let business = await Business.findOne({ createdBy });
+  let business = await Business.findOne().sort({ createdAt: 1 });
   if (!business) {
     business = await Business.create({
       name,
       currency: "Rs",
       targetCapital: 50_000,
-      createdBy,
+      createdBy: new mongoose.Types.ObjectId(userId),
     });
   }
   return business;
@@ -51,7 +54,6 @@ export async function getBusinessSummary(
   await ensureEggShedExample(userId);
   const business = await getOrCreateBusiness(userId);
   const businessId = business._id;
-  const createdBy = new mongoose.Types.ObjectId(userId);
 
   const [partners, contribAgg, spentAgg] = await Promise.all([
     Partner.find({ businessId }).sort({ name: 1 }).lean(),
@@ -65,7 +67,7 @@ export async function getBusinessSummary(
       },
     ]),
     Expense.aggregate([
-      { $match: { createdBy } },
+      { $match: { businessId } },
       { $group: { _id: null, total: { $sum: "$amount" } } },
     ]),
   ]);

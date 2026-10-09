@@ -3,7 +3,7 @@
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { ConfirmModal } from "@/components/ConfirmModal";
-import { formatDate, formatMoney } from "@/lib/format";
+import { formatDate, formatMoney, SHARED_SPENDER } from "@/lib/format";
 
 type Expense = {
   id: string;
@@ -171,15 +171,23 @@ export function ExpensesClient({
                         name="spentBy"
                         required
                         defaultValue={
+                          editing.spentBy === SHARED_SPENDER ||
                           partners.some((p) => p.name === editing.spentBy)
                             ? editing.spentBy
                             : partners[0].name
                         }
                       >
-                        {!partners.some((p) => p.name === editing.spentBy) &&
+                        {editing.spentBy !== SHARED_SPENDER &&
+                        !partners.some((p) => p.name === editing.spentBy) &&
                         editing.spentBy ? (
                           <option value={editing.spentBy}>
                             {editing.spentBy} (old)
+                          </option>
+                        ) : null}
+                        {partners.length > 1 ||
+                        editing.spentBy === SHARED_SPENDER ? (
+                          <option value={SHARED_SPENDER}>
+                            {SHARED_SPENDER} (equal share)
                           </option>
                         ) : null}
                         {partners.map((p) => (
@@ -265,6 +273,9 @@ export function ExpensesClient({
             onChange={(e) => setSpentBy(e.target.value)}
           >
             <option value="">All partners</option>
+            {partners.length > 1 ? (
+              <option value={SHARED_SPENDER}>{SHARED_SPENDER}</option>
+            ) : null}
             {partners.map((p) => (
               <option key={p.id} value={p.name}>
                 {p.name}

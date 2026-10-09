@@ -58,7 +58,7 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
         { $set: { partnerName: partner.name } },
       );
       await Expense.updateMany(
-        { createdBy: partner.createdBy, spentBy: prevName },
+        { businessId: partner.businessId, spentBy: prevName },
         { $set: { spentBy: partner.name } },
       );
     }

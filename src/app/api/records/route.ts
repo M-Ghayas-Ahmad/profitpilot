@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import mongoose from "mongoose";
 import { getSession } from "@/lib/auth";
 import { canAccessRecords } from "@/lib/access";
 import { connectDB } from "@/lib/db";
@@ -22,9 +21,8 @@ export async function GET(req: NextRequest) {
   const status = searchParams.get("status")?.trim();
   const limit = Math.min(Number(searchParams.get("limit") || 100), 300);
 
-  const filter: Record<string, unknown> = {
-    userId: new mongoose.Types.ObjectId(session.id),
-  };
+  // Activity is shared across accounts, like the business itself.
+  const filter: Record<string, unknown> = {};
 
   if (moduleFilter && moduleFilter !== "all") filter.module = moduleFilter;
   if (status === "Success" || status === "Failed") filter.status = status;

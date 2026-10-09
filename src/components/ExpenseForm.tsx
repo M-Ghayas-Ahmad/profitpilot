@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { SHARED_SPENDER } from "@/lib/format";
 
 type PartnerOption = { id: string; name: string };
 
@@ -22,7 +23,7 @@ export function ExpenseForm({
 
   const initialSpentBy =
     defaultSpentBy ||
-    partners[0]?.name ||
+    (partners.length > 1 ? SHARED_SPENDER : partners[0]?.name) ||
     "";
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -74,6 +75,11 @@ export function ExpenseForm({
           Who spent from the pot?
           {partners.length > 0 ? (
             <select name="spentBy" required defaultValue={initialSpentBy}>
+              {partners.length > 1 ? (
+                <option value={SHARED_SPENDER}>
+                  {SHARED_SPENDER} (equal share)
+                </option>
+              ) : null}
               {partners.map((p) => (
                 <option key={p.id} value={p.name}>
                   {p.name}

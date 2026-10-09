@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import mongoose from "mongoose";
 import { getSession } from "@/lib/auth";
 import { logActivity } from "@/lib/activity";
 import { connectDB } from "@/lib/db";
+import { getOrCreateBusiness } from "@/lib/business";
 import { Expense } from "@/models/Expense";
 
 const createSchema = z.object({
@@ -27,9 +27,8 @@ export async function GET(req: NextRequest) {
   const from = searchParams.get("from");
   const to = searchParams.get("to");
 
-  const filter: Record<string, unknown> = {
-    createdBy: new mongoose.Types.ObjectId(session.id),
-  };
+  const business = await getOrCreateBusiness(session.id);
+  const filter: Record<string, unknown> = { businessId: business._id };
 
   if (spentBy) filter.spentBy = new RegExp(spentBy, "i");
   if (q) {
@@ -77,8 +76,10 @@ export async function POST(req: Request) {
     const body = createSchema.parse(await req.json());
     await connectDB();
 
+    const business = await getOrCreateBusiness(session.id);
     const expense = await Expense.create({
       ...body,
+      businessId: business._id,
       date: new Date(body.date),
       createdBy: session.id,
     });

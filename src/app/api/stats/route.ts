@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import mongoose from "mongoose";
 import { getSession } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
+import { getOrCreateBusiness } from "@/lib/business";
 import { Expense } from "@/models/Expense";
 
 export async function GET() {
@@ -11,14 +11,14 @@ export async function GET() {
   }
 
   await connectDB();
-  const userId = new mongoose.Types.ObjectId(session.id);
+  const businessId = (await getOrCreateBusiness(session.id))._id;
 
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
   const [totals, byPerson, recent] = await Promise.all([
     Expense.aggregate([
-      { $match: { createdBy: userId } },
+      { $match: { businessId } },
       {
         $group: {
           _id: null,
@@ -28,16 +28,16 @@ export async function GET() {
       },
     ]),
     Expense.aggregate([
-      { $match: { createdBy: userId } },
+      { $match: { businessId } },
       { $group: { _id: "$spentBy", total: { $sum: "$amount" }, count: { $sum: 1 } } },
       { $sort: { total: -1 } },
       { $limit: 8 },
     ]),
-    Expense.find({ createdBy: userId }).sort({ date: -1 }).limit(6).lean(),
+    Expense.find({ businessId }).sort({ date: -1 }).limit(6).lean(),
   ]);
 
   const monthAgg = await Expense.aggregate([
-    { $match: { createdBy: userId, date: { $gte: monthStart } } },
+    { $match: { businessId, date: { $gte: monthStart } } },
     { $group: { _id: null, total: { $sum: "$amount" }, count: { $sum: 1 } } },
   ]);
 

@@ -55,7 +55,7 @@ export async function POST(req: Request) {
       status: "Success",
     });
 
-    await seedEggShedExample(String(user._id), { force: true });
+    await seedEggShedExample(String(user._id));
 
     const res = NextResponse.json({
       user: { id: String(user._id), name: user.name, email: user.email },
