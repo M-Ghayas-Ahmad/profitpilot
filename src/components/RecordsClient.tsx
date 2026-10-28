@@ -60,7 +60,7 @@ export function RecordsClient() {
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search description, action, module…"
+          placeholder="Search activity…"
         />
         <select
           value={moduleFilter}
@@ -108,14 +108,14 @@ export function RecordsClient() {
             <tbody>
               {records.map((row) => (
                 <tr key={row.id}>
-                  <td>{row.index}</td>
-                  <td className="nowrap">{formatDateTime(row.dateTime)}</td>
-                  <td>{row.user}</td>
-                  <td>{row.role}</td>
-                  <td>{row.module}</td>
-                  <td>{row.action}</td>
-                  <td>{row.description}</td>
-                  <td>
+                  <td data-label="#">{row.index}</td>
+                  <td data-label="Date & time" className="nowrap">{formatDateTime(row.dateTime)}</td>
+                  <td data-label="User">{row.user}</td>
+                  <td data-label="Role">{row.role}</td>
+                  <td data-label="Module">{row.module}</td>
+                  <td data-label="Action">{row.action}</td>
+                  <td data-label="Description" className="cell-desc">{row.description}</td>
+                  <td data-label="Status">
                     <span
                       className={
                         row.status === "Success"

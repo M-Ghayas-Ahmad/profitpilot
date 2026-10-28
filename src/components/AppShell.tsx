@@ -42,6 +42,15 @@ const NAV = [
     ),
   },
   {
+    href: "/app/eggs",
+    label: "Eggs",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <path d="M12 3c-3.5 0-6.5 5.2-6.5 10a6.5 6.5 0 0013 0C18.5 8.2 15.5 3 12 3z" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
     href: "/app/records",
     label: "Activity",
     icon: (
