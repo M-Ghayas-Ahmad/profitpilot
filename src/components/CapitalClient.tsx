@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import { useToast } from "@/components/Toast";
 import { formatDate, formatMoney } from "@/lib/format";
 
 type Partner = {
@@ -50,6 +51,7 @@ export function CapitalClient({
   contributions,
 }: Props) {
   const router = useRouter();
+  const notify = useToast();
   const [tab, setTab] = useState<Tab>("partners");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -105,16 +107,20 @@ export function CapitalClient({
     setBusy(false);
     if (!res.ok) {
       setError(data.error || "Could not update business");
+      notify(data.error || "Could not update business", "error");
       return;
     }
+    notify("Business settings saved");
     await refresh();
   }
 
   async function addPartner(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    // React clears e.currentTarget once the handler yields, so keep the form before any await
+    const form = e.currentTarget;
     setBusy(true);
     setError("");
-    const fd = new FormData(e.currentTarget);
+    const fd = new FormData(form);
     const res = await fetch("/api/partners", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -127,9 +133,11 @@ export function CapitalClient({
     setBusy(false);
     if (!res.ok) {
       setError(data.error || "Could not add partner");
+      notify(data.error || "Could not add partner", "error");
       return;
     }
-    e.currentTarget.reset();
+    form.reset();
+    notify(`Partner ${String(fd.get("name") || "")} added`);
     await refresh();
   }
 
@@ -154,6 +162,7 @@ export function CapitalClient({
       return;
     }
     setEditingPartner(null);
+    notify("Partner updated");
     await refresh();
   }
 
@@ -168,18 +177,21 @@ export function CapitalClient({
     setBusy(false);
     if (!res.ok) {
       setError(data.error || "Could not delete partner");
+      notify(data.error || "Could not delete partner", "error");
       setDeletingPartner(null);
       return;
     }
+    notify(`Partner ${deletingPartner.name} deleted`);
     setDeletingPartner(null);
     await refresh();
   }
 
   async function addContribution(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     setBusy(true);
     setError("");
-    const fd = new FormData(e.currentTarget);
+    const fd = new FormData(form);
     const res = await fetch("/api/contributions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -194,9 +206,12 @@ export function CapitalClient({
     setBusy(false);
     if (!res.ok) {
       setError(data.error || "Could not add contribution");
+      notify(data.error || "Could not add contribution", "error");
       return;
     }
-    e.currentTarget.reset();
+    form.reset();
+    // reset() restores the defaultValue (today) for the date field
+    notify(`Contribution of ${formatMoney(Number(fd.get("amount")))} recorded`);
     await refresh();
   }
 
@@ -223,6 +238,7 @@ export function CapitalClient({
       return;
     }
     setEditingContribution(null);
+    notify("Contribution updated");
     await refresh();
   }
 
@@ -238,9 +254,11 @@ export function CapitalClient({
     setBusy(false);
     if (!res.ok) {
       setError(data.error || "Could not delete contribution");
+      notify(data.error || "Could not delete contribution", "error");
       setDeletingContribution(null);
       return;
     }
+    notify(`Removed ${formatMoney(deletingContribution.amount)} from ${deletingContribution.partnerName}`);
     setDeletingContribution(null);
     await refresh();
   }
@@ -257,8 +275,10 @@ export function CapitalClient({
     setBusy(false);
     if (!res.ok) {
       setError(data.error || "Could not load example");
+      notify(data.error || "Could not load example", "error");
       return;
     }
+    notify("Example data loaded");
     setTab("partners");
     await refresh();
   }

@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { SHARED_SPENDER } from "@/lib/format";
+import { SHARED_SPENDER, formatMoney } from "@/lib/format";
+import { useToast } from "@/components/Toast";
 
 type PartnerOption = { id: string; name: string };
 
@@ -20,6 +21,7 @@ export function ExpenseForm({
   const router = useRouter();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const notify = useToast();
 
   const initialSpentBy =
     defaultSpentBy ||
@@ -28,9 +30,11 @@ export function ExpenseForm({
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    // React clears e.currentTarget once the handler yields, so keep the form before any await
+    const form = e.currentTarget;
     setBusy(true);
     setError("");
-    const fd = new FormData(e.currentTarget);
+    const fd = new FormData(form);
     const payload = {
       title: String(fd.get("title") || ""),
       amount: Number(fd.get("amount")),
@@ -49,10 +53,12 @@ export function ExpenseForm({
 
     if (!res.ok) {
       setError(data.error || "Could not save expense");
+      notify(data.error || "Could not save expense", "error");
       return;
     }
 
-    e.currentTarget.reset();
+    form.reset();
+    notify(`Saved “${data.expense.title}” — ${formatMoney(data.expense.amount)}`);
     onDone?.();
     router.push("/app/expenses");
     router.refresh();

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
+import { ToastProvider } from "@/components/Toast";
 import { getSession } from "@/lib/auth";
 import { canAccessRecords } from "@/lib/access";
 
@@ -12,11 +13,13 @@ export default async function AppLayout({
   if (!session) redirect("/login");
 
   return (
-    <AppShell
-      userName={session.name}
-      showRecords={canAccessRecords(session)}
-    >
-      {children}
-    </AppShell>
+    <ToastProvider>
+      <AppShell
+        userName={session.name}
+        showRecords={canAccessRecords(session)}
+      >
+        {children}
+      </AppShell>
+    </ToastProvider>
   );
 }

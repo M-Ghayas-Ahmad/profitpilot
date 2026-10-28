@@ -3,6 +3,7 @@
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import { useToast } from "@/components/Toast";
 import { formatDate, formatMoney, SHARED_SPENDER } from "@/lib/format";
 
 type Expense = {
@@ -39,6 +40,7 @@ export function ExpensesClient({
   const [deleting, setDeleting] = useState<Expense | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const notify = useToast();
 
   useEffect(() => {
     setMounted(true);
@@ -92,8 +94,12 @@ export function ExpensesClient({
     });
     setDeleteBusy(false);
     if (res.ok) {
+      notify(`Deleted “${deleting.title}”`);
       setDeleting(null);
       load();
+    } else {
+      const data = await res.json().catch(() => ({}));
+      notify(data.error || "Could not delete buy", "error");
     }
   }
 
@@ -125,6 +131,7 @@ export function ExpensesClient({
     }
 
     setEditing(null);
+    notify(`Updated “${payload.title}”`);
     load();
   }
 
