@@ -2649,6 +2649,7 @@ button:disabled {
   .records-table td {
     display: block;
     width: 100%;
+    min-width: 0;
   }
 
   .records-table thead {
